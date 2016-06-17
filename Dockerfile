@@ -8,6 +8,11 @@ ADD onboot_script /usr/local/bin/onboot_script
 
 RUN chmod +x /usr/local/bin/onboot_script
 
+ADD shutdown.conf /etc/init/shutdown.conf
+ADD timed_shutdown /usr/local/bin/timed_shutdown
+
+RUN chmod +x /usr/local/bin/timed_shutdown
+
 # Divert initctl temporarily so apt-update can work
 RUN dpkg-divert --local --rename --add /sbin/initctl
 RUN ln -s /bin/true /sbin/initctl
