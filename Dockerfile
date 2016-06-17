@@ -2,14 +2,14 @@ FROM dalehamel/ubuntu-docker-upstart-minimal
 
 ENV DEBIAN_FRONTEND noninteractive
 
-ADD ttyS1.conf /etc/init/ttyS1.conf
-ADD onboot_script.conf /etc/init/onboot_script.conf
-ADD onboot_script /usr/local/bin/onboot_script
+ADD etc/ttyS1.conf /etc/init/ttyS1.conf
+ADD init/onboot_script.conf /etc/init/onboot_script.conf
+ADD init/onboot_script /usr/local/bin/onboot_script
 
 RUN chmod +x /usr/local/bin/onboot_script
 
-ADD shutdown.conf /etc/init/shutdown.conf
-ADD timed_shutdown /usr/local/bin/timed_shutdown
+ADD init/shutdown.conf /etc/init/shutdown.conf
+ADD init/timed_shutdown /usr/local/bin/timed_shutdown
 
 RUN chmod +x /usr/local/bin/timed_shutdown
 
@@ -18,7 +18,7 @@ RUN dpkg-divert --local --rename --add /sbin/initctl
 RUN ln -s /bin/true /sbin/initctl
 
 # Don't invoke rc.d policy scripts
-ADD rc.d-policy-stub /usr/sbin/policy-rc.d
+ADD util/rc.d-policy-stub /usr/sbin/policy-rc.d
 RUN chmod +x /usr/sbin/policy-rc.d
 
 ################ start Install packages ###################
@@ -68,16 +68,18 @@ RUN apt-get install -y \
   stress \
   stressapptest
 
-ADD ipmicfg.tar.gz /usr/local/src/ipmicfg/
-ADD ipmicfg /usr/bin
+ADD ipmi/ipmicfg.tar.gz /usr/local/src/ipmicfg/
+ADD ipmi/ipmicfg /usr/bin
+ADD ipmi/sum /usr/bin
 
 RUN chmod +x /usr/bin/ipmicfg
+RUN chmod +x /usr/bin/sum
 
 ################ Done Install packages ###################
 
 RUN useradd -G sudo -m ubuntu
 RUN echo ubuntu:ubuntu | chpasswd
-ADD sudoers /etc/sudoers
+ADD etc/sudoers /etc/sudoers
 
 # Undo the diversion so upstart can work
 RUN rm /sbin/initctl

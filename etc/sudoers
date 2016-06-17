@@ -1,0 +1,14 @@
+Defaults      !lecture,tty_tickets,!fqdn
+
+# User privilege specification
+root          ALL=(ALL) ALL
+
+
+# Members of the group 'sysadmin' may gain root privileges
+%sysadmin ALL=(ALL) NOPASSWD:ALL
+# Members of the group 'admin' may gain root privileges
+%admin ALL=(ALL) NOPASSWD:ALL
+# Members of the group 'sudo' may gain root privileges
+%sudo ALL=(ALL) NOPASSWD:ALL
+
+#includedir /etc/sudoers.d
