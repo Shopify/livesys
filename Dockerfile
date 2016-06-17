@@ -67,6 +67,9 @@ RUN chmod +x /usr/bin/ipmicfg
 
 ################ Done Install packages ###################
 
+RUN useradd -G sudo -m ubuntu
+RUN echo ubuntu:ubuntu | chpasswd
+ADD sudoers /etc/sudoers
 
 # Undo the diversion so upstart can work
 RUN rm /sbin/initctl
