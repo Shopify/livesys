@@ -2,8 +2,11 @@ FROM dalehamel/ubuntu-docker-upstart-minimal
 
 ENV DEBIAN_FRONTEND noninteractive
 
-ADD onboot_script.conf /etc/init/onboot_script.conf
 ADD ttyS1.conf /etc/init/ttyS1.conf
+ADD onboot_script.conf /etc/init/onboot_script.conf
+ADD onboot_script /usr/local/bin/onboot_script
+
+RUN chmod +x /usr/local/bin/onboot_script
 
 # Divert initctl temporarily so apt-update can work
 RUN dpkg-divert --local --rename --add /sbin/initctl
