@@ -11,7 +11,7 @@ echo "Exporting ${container} to ${tmpdir}..."
 docker export ${container} | sudo tar -C ${tmpdir} -xpf -
 
 echo "Squashing..."
-sudo mksquashfs ${tmpdir} ${OUTPUT} -wildcards -e '.docker*' 'tmp/*' 'usr/src' 'var/lib/apt/lists/archive*' 'var/cache/apt/archives'
+sudo mksquashfs ${tmpdir} ${OUTPUT} -noappend -wildcards -e '.docker*' 'tmp/*' 'usr/src' 'var/lib/apt/lists/archive*' 'var/cache/apt/archives'
 
 echo "Output is at ${OUTPUT}"
 sudo chown `whoami` ${OUTPUT}
