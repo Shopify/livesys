@@ -49,7 +49,8 @@ RUN apt-get install -y \
   openssh-server \
   smartmontools \
   vim \
-  wget
+  wget \
+  xfsprogs
 
 ADD sysbench /usr/bin/sysbench
 
