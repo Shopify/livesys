@@ -50,7 +50,8 @@ RUN apt-get install -y \
   smartmontools \
   vim \
   wget \
-  xfsprogs
+  xfsprogs \
+  xz-utils
 
 ADD sysbench /usr/bin/sysbench
 
