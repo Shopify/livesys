@@ -29,10 +29,14 @@ if [ -n "$(grep onboot_script_url= /proc/cmdline)" ];then
 
   # Read the script URL from /proc/cmdline
   url_param=$(grep -o 'onboot_script_url=\S*' /proc/cmdline)
-  payload=$(grep -o 'payload=\S*' /proc/cmdline)
   url=${url_param#onboot_script_url=}
 
-  curl "$url?$payload" > /onboot_script
+  payload=$(grep -o 'payload=\S*' /proc/cmdline)
+  if [ -z  ${payload#payload=} ];then
+    payload=""
+  fi
+
+  curl "${url}?${payload}" > /onboot_script
   chmod +x /onboot_script
 
   /onboot_script
