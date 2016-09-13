@@ -10,10 +10,10 @@ wait_network()
   while [ -z "$(ip route | grep 'default' | awk '{print $3}')" ];do
     ip="$(ip route | grep 'default' | awk '{print $3}')"
     if [ -n "${ip}" ];then
-      ping -t 1 -c 1 ${ip} > /dev/null
+      ping -t 1 -c 1 "${ip}" > /dev/null
       [ $? -eq 0 ] && break
     fi
-    retries=$[$retries +1]
+    retries=$((retries + 1))
     if [ $retries -gt $MAX_RETRIES ];then
       echo "Network failed to come up"
       exit 1
@@ -25,14 +25,14 @@ wait_network()
 
 wait_network
 # Fetch and run script at onboot_script_url if given
-if [ -n "$(grep onboot_script_url= /proc/cmdline)" ];then
+if grep -q onboot_script_url= /proc/cmdline; then
 
   # Read the script URL from /proc/cmdline
   url_param=$(grep -o 'onboot_script_url=\S*' /proc/cmdline)
   url=${url_param#onboot_script_url=}
 
   payload=$(grep -o 'payload=\S*' /proc/cmdline)
-  if [ -z  ${payload#payload=} ];then
+  if [ -z  "${payload#payload=}" ];then
     payload=""
   fi
 
