@@ -62,3 +62,7 @@ A fully functional ubuntu apt package manager is also included, so you can insta
 ## System installation
 
 This image may be used to install other live images, by preparing the necessary environment to copy an image onto. Typically, this means formatting disks.
+
+## Testing
+
++[![Build Status](https://travis-ci.org/Shopify/livesys.svg?branch=master)](https://travis-ci.org/Shopify/livesys)
