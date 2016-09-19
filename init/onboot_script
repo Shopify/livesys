@@ -48,8 +48,8 @@ if grep -q onboot_script_url= /proc/cmdline; then
   url_param=$(grep -o 'onboot_script_url=\S*' /proc/cmdline)
   url=${url_param#onboot_script_url=}
 
-  if has_param payload;then
-    payload="payload=$(get_param payload)"
+  if has_param 'payload';then
+    payload="payload=$(get_param 'payload')"
   fi
 
   curl "${url}?${payload}" > /onboot_script
