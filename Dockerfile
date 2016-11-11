@@ -14,9 +14,6 @@ ADD init/timed_shutdown /usr/local/bin/timed_shutdown
 RUN chmod +x /usr/local/bin/timed_shutdown
 RUN systemctl enable timed_shutdown
 
-# Enable ttyS1 getty for serial console
-RUN systemctl enable getty@ttyS1
-
 # Don't invoke rc.d policy scripts
 ADD util/rc.d-policy-stub /usr/sbin/policy-rc.d
 RUN chmod +x /usr/sbin/policy-rc.d
@@ -49,6 +46,8 @@ RUN apt-get install -y \
   openssh-server \
   smartmontools \
   mysql-common \
+  ubuntu-standard \
+  sudo \
   vim \
   wget \
   xfsprogs \
