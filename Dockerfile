@@ -1,21 +1,18 @@
-FROM dalehamel/ubuntu-docker-upstart-minimal
+FROM dalehamel/ubuntu-docker-systemd-minimal
 
 ENV DEBIAN_FRONTEND noninteractive
 
-ADD etc/ttyS1.conf /etc/init/ttyS1.conf
-ADD init/onboot_script.conf /etc/init/onboot_script.conf
+# Install systemd unit files
+ADD init/onboot_script.service /etc/systemd/system/onboot_script.service
 ADD init/onboot_script /usr/local/bin/onboot_script
-
 RUN chmod +x /usr/local/bin/onboot_script
+RUN systemctl enable onboot_script
 
-ADD init/shutdown.conf /etc/init/shutdown.conf
+
+ADD init/timed_shutdown.service /etc/systemd/system/timed_shutdown.service
 ADD init/timed_shutdown /usr/local/bin/timed_shutdown
-
 RUN chmod +x /usr/local/bin/timed_shutdown
-
-# Divert initctl temporarily so apt-update can work
-RUN dpkg-divert --local --rename --add /sbin/initctl
-RUN ln -s /bin/true /sbin/initctl
+RUN systemctl enable timed_shutdown
 
 # Don't invoke rc.d policy scripts
 ADD util/rc.d-policy-stub /usr/sbin/policy-rc.d
@@ -26,16 +23,15 @@ RUN chmod +x /usr/sbin/policy-rc.d
 RUN apt-get update
 
 # Get ruby
-RUN  echo "deb http://ppa.launchpad.net/brightbox/ruby-ng/ubuntu trusty main" >> /etc/apt/sources.list
+RUN  echo "deb http://ppa.launchpad.net/brightbox/ruby-ng/ubuntu xenial main" >> /etc/apt/sources.list
 RUN gpg --keyserver keyserver.ubuntu.com --recv C3173AA6
 RUN apt-get update
 RUN apt-get install -y --force-yes ruby2.3 ruby-switch
-RUN ruby-switch --set ruby2.3
 
 # Get megacli
 RUN curl http://hwraid.le-vert.net/debian/hwraid.le-vert.net.gpg.key -o /tmp/megaraid_gpg
 RUN apt-key add /tmp/megaraid_gpg
-RUN echo 'deb http://hwraid.le-vert.net/ubuntu trusty main' >> /etc/apt/sources.list
+RUN echo 'deb http://hwraid.le-vert.net/ubuntu wily main' >> /etc/apt/sources.list
 RUN apt-get update
 RUN apt-get install -y --force-yes megacli
 
@@ -46,13 +42,19 @@ RUN apt-get install -y \
   lldpd \
   lvm2 \
   mdadm \
+  net-tools \
   openssh-server \
   smartmontools \
+  mysql-common \
+  ubuntu-standard \
+  sudo \
   vim \
   wget \
   xfsprogs \
   xz-utils
 
+RUN wget http://launchpadlibrarian.net/212189159/libmysqlclient18_5.6.25-0ubuntu1_amd64.deb
+RUN dpkg -i libmysqlclient18_5.6.25-0ubuntu1_amd64.deb
 ADD sysbench /usr/bin/sysbench
 
 RUN chmod +x /usr/bin/sysbench
@@ -66,7 +68,6 @@ RUN mv /tmp/mprime /usr/bin
 RUN apt-get install -y \
   cpuburn \
   fio \
-  libmysqlclient18 \
   stress \
   stressapptest
 
@@ -83,10 +84,6 @@ RUN useradd -G sudo -m ubuntu
 RUN echo ubuntu:ubuntu | chpasswd
 ADD etc/sudoers /etc/sudoers
 
-# Undo the diversion so upstart can work
-RUN rm /sbin/initctl
-RUN dpkg-divert --local --rename --remove /sbin/initctl
-
 # Undo the fake policy-rc.d
 RUN rm /usr/sbin/policy-rc.d
 
@@ -94,8 +91,4 @@ RUN rm /usr/sbin/policy-rc.d
 RUN rm -rf /var/lib/apt/lists/*
 # this forces "apt-get update" in dependent images, which is also good
 
-# Get rid of this, we don't need it anymore and it'll mess with the real init
-RUN rm /etc/init/fake-container-events.conf
-
 CMD ["/sbin/init"]
-

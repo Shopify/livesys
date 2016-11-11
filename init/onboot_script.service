@@ -1,0 +1,9 @@
+[Unit]
+Description=Run an arbitrary script on boot
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/bin/onboot_script
+
+[Install]
+WantedBy=multi-user.target
